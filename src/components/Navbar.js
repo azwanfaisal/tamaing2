@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,10 @@ const Navbar = () => {
   return (
     <nav className="bg-pink-600 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">TemaIng</h1>
+        <div className="flex items-center space-x-3">
+          <Image src="/z.jpg" alt="Logo" width={40} height={40} />
+          <h1 className="text-xl font-bold">TemaIng</h1>
+        </div>
 
         <ul className="hidden md:flex space-x-6">
           <li><Link href="/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
