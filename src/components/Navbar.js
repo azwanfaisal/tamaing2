@@ -19,12 +19,12 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <Image src="/z.jpg" alt="Logo" width={40} height={40} />
-          <h1 className="text-xl font-bold">TemaIng</h1>
+          <h1 className="text-xl font-bold">Pinky Boy</h1>
         </div>
 
         <ul className="hidden md:flex space-x-6">
           <li><Link href="/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
-          <li><Link href="/user" className="hover:text-gray-300">User</Link></li>
+          <li><Link href="/users" className="hover:text-gray-300">User</Link></li>
           <li><Link href="/room" className="hover:text-gray-300">Room</Link></li>
           <li className="relative group">
             <button className="hover:text-gray-300">Transaction ▼</button>
