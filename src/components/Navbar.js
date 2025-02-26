@@ -18,14 +18,14 @@ const Navbar = () => {
     <nav className="bg-pink-600 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <Image src="/z.jpg" alt="Logo" width={40} height={40} />
+          <Image src="/o.png" alt="Logo" width={90} height={90} />
           <h1 className="text-xl font-bold">Pinky Boy</h1>
         </div>
 
         <ul className="hidden md:flex space-x-6">
           <li><Link href="/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
+          <li><Link href="/tasbeh" className="hover:text-gray-300">Tasbeh Digital</Link></li>
           <li><Link href="/users" className="hover:text-gray-300">User</Link></li>
-          <li><Link href="/room" className="hover:text-gray-300">Room</Link></li>
           <li className="relative group">
             <button className="hover:text-gray-300">Transaction ▼</button>
             <ul className="absolute hidden group-hover:block bg-blue-700 mt-2 w-40">
