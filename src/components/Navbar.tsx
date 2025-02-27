@@ -1,18 +1,33 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useProfile } from "../context/ProfileContext"; // Import useProfile
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  
-  // URL gambar profil (bisa diganti dengan data dari API)
-  const profilePic = "/p.jpg"; 
-
+  const { profilePic } = useProfile(); // Gunakan foto profil dari context
   const router = useRouter();
+
+  // Ref untuk mendeteksi klik di luar dropdown
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Fungsi untuk menangani klik di luar dropdown
+  const handleClickOutside = (event: MouseEvent) => {
+    if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+      setProfileOpen(false);
+    }
+  };
+
+  // Tambahkan event listener saat komponen dipasang
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-pink-600 text-white p-4 shadow-lg">
@@ -28,21 +43,21 @@ const Navbar = () => {
           <li><Link href="/users" className="hover:text-gray-300">User</Link></li>
           <li className="relative group">
             <button className="hover:text-gray-300">Transaction ▼</button>
-            <ul className="absolute hidden group-hover:block bg-blue-700 mt-2 w-40">
-              <li><Link href="/transaction/booking" className="block px-4 py-2 hover:bg-blue-800">Booking</Link></li>
+            <ul className="absolute hidden group-hover:block bg-pink-500 mt-2 w-40">
+              <li><Link href="/transaction/booking" className="block px-4 py-2 hover:bg-pink-600">Booking</Link></li>
             </ul>
           </li>
         </ul>
 
         {/* Profile Dropdown */}
-        <div className="relative">
+        <div className="relative" ref={profileRef}>
           <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center space-x-2">
             <img src={profilePic} alt="Profile" className="w-10 h-10 rounded-full border-2 border-white" />
           </button>
           {profileOpen && (
             <ul className="absolute right-0 mt-2 w-40 bg-white text-pink-600 rounded-lg shadow-lg overflow-hidden">
               <li>
-                <button onClick={() => router.push(`/profile?image=${profilePic}`)} className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                <button onClick={() => router.push(`/profile`)} className="block px-4 py-2 w-full text-left hover:bg-gray-200">
                   Profile
                 </button>
               </li>

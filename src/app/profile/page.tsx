@@ -1,23 +1,46 @@
 "use client";
+import { useRef } from "react";
+import { useProfile } from "../../context/ProfileContext"; // ✅ Coba pakai path relatif
 
-import { useSearchParams } from "next/navigation";
 
 const ProfilePage = () => {
-  const searchParams = useSearchParams();
-  const profilePic = searchParams.get("image") || "/p.jpg"; // Gambar default jika tidak ada
+  const { profilePic, setProfilePic } = useProfile();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setProfilePic(reader.result);
+          localStorage.setItem("profilePic", reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-pink-600">My Profile</h2>
         <div className="flex justify-center">
-          <img 
-            src={profilePic} 
-            alt="Profile" 
-            className="w-32 h-32 rounded-full border-4 border-pink-600 shadow-md object-cover"
+          <img
+            src={profilePic}
+            alt="Profile"
+            className="w-32 h-32 rounded-full border-4 border-pink-600 shadow-md object-cover cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
           />
         </div>
-        <p className="mt-4 text-pink-600">Welcome To My Profile Page!!!!</p>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleImageChange}
+        />
+        <p className="mt-4 text-pink-600">Click on the profile picture to change it!</p>
       </div>
     </div>
   );
