@@ -41,12 +41,7 @@ const Navbar = () => {
           <li><Link href="/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
           <li><Link href="/tasbeh" className="hover:text-gray-300">Tasbeh Digital</Link></li>
           <li><Link href="/users" className="hover:text-gray-300">User</Link></li>
-          <li className="relative group">
-            <button className="hover:text-gray-300">Transaction ▼</button>
-            <ul className="absolute hidden group-hover:block bg-pink-500 mt-2 w-40">
-              <li><Link href="/transaction/booking" className="block px-4 py-2 hover:bg-pink-600">Booking</Link></li>
-            </ul>
-          </li>
+          <li><Link href="/employees" className="hover:text-gray-300">Karyawan</Link></li>
         </ul>
 
         {/* Profile Dropdown */}

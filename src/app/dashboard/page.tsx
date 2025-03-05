@@ -1,12 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, Legend, CartesianGrid } from "recharts";
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, PieChart, Pie, Cell, 
+  ResponsiveContainer, Legend, CartesianGrid 
+} from "recharts";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Bell, Filter } from "lucide-react";
 
-const dataBookings = [
+interface BookingData {
+  day: string;
+  count: number;
+}
+
+interface RevenueData {
+  day: string;
+  revenue: number;
+}
+
+interface FeedbackData {
+  name: string;
+  value: number;
+}
+
+const dataBookings: BookingData[] = [
   { day: "Sen", count: 3 },
   { day: "Sel", count: 5 },
   { day: "Rab", count: 2 },
@@ -14,7 +32,7 @@ const dataBookings = [
   { day: "Jum", count: 6 },
 ];
 
-const dataRevenue = [
+const dataRevenue: RevenueData[] = [
   { day: "Sen", revenue: 500 },
   { day: "Sel", revenue: 700 },
   { day: "Rab", revenue: 400 },
@@ -22,13 +40,14 @@ const dataRevenue = [
   { day: "Jum", revenue: 800 },
 ];
 
-const dataFeedback = [
+const dataFeedback: FeedbackData[] = [
   { name: "Positif", value: 80 },
   { name: "Negatif", value: 20 },
 ];
 
-const COLORS = ["#4CAF50", "#FF5733"];
-const notifications = [
+const COLORS: string[] = ["#4CAF50", "#FF5733"];
+
+const notifications: string[] = [
   "Booking baru diterima",
   "Pembayaran sukses dari pelanggan A",
   "Pelanggan B membatalkan reservasi",
@@ -36,17 +55,15 @@ const notifications = [
 ];
 
 export default function Dashboard() {
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
   return (
     <div className="p-6 bg-gradient-to-r from-blue-50 to-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-pink-600 flex items-center gap-2">
-          📊 Dashboard Overview
-        </h1>
+        <h1 className="text-3xl font-bold text-pink-600 flex items-center gap-2">📊 Dashboard Overview</h1>
         <div className="flex gap-4">
           <DatePicker
             selected={startDate}
-            onChange={(date) => setStartDate(date)}
+            onChange={(date: Date | null) => setStartDate(date)}
             className="p-2 border rounded-lg shadow-md"
           />
           <button className="bg-blue-500 text-white p-2 rounded-lg flex items-center gap-2 hover:bg-blue-600 transition">
@@ -118,9 +135,7 @@ export default function Dashboard() {
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-lg mt-6">
-        <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-          🔔 Notifikasi Terbaru
-        </h3>
+        <h3 className="text-lg font-bold mb-2 flex items-center gap-2">🔔 Notifikasi Terbaru</h3>
         <ul>
           {notifications.map((note, index) => (
             <li key={index} className="p-2 border-b last:border-none">{note}</li>
