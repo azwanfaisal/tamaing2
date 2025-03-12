@@ -58,6 +58,7 @@ export default function Users() {
     <div className="container mx-auto p-6">
       <ToastContainer position="top-right" autoClose={3000} />
       <h1 className="text-3xl font-bold text-center mb-6 text-pink-600">User List</h1>
+      
 
       <div className="bg-pink-600 shadow-md rounded-lg p-4 mb-6">
         <div className="mb-4 flex space-x-2 items-center">

@@ -21,6 +21,8 @@ export default function Bookings() {
   const [newBooking, setNewBooking] = useState<{ customer: string; room: string; checkIn: string; checkOut: string }>(
     { customer: "", room: "", checkIn: "", checkOut: "" }
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetch("/booking.json")
@@ -48,16 +50,23 @@ export default function Bookings() {
   };
 
   const filteredBookings = bookings.filter((booking) => 
-    (booking.customer.toLowerCase().includes(search.toLowerCase()) || 
-     booking.room.toLowerCase().includes(search.toLowerCase())) &&
-    (filter ? booking.room.toLowerCase().includes(filter.toLowerCase()) : true)
+    booking.customer.toLowerCase().includes(search.toLowerCase()) || 
+    booking.room.toLowerCase().includes(search.toLowerCase())
   );
+  
+  const filteredAndPaginatedBookings = filteredBookings.filter((booking) =>
+    filter ? booking.room.toLowerCase().includes(filter.toLowerCase()) : true
+  );
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentBookings = filteredAndPaginatedBookings.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAndPaginatedBookings.length / itemsPerPage);
 
   return (
     <div className="container mx-auto p-6">
       <ToastContainer position="top-right" autoClose={3000} />
       <h1 className="text-3xl font-bold text-center mb-6 text-pink-600">Booking List</h1>
-
       <div className="bg-pink-600 shadow-md rounded-lg p-4 mb-6">
         <div className="mb-4 flex space-x-2 items-center">
           <input
@@ -84,38 +93,6 @@ export default function Bookings() {
             ))}
           </select>
         )}
-
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Customer"
-            value={newBooking.customer}
-            onChange={(e) => setNewBooking({ ...newBooking, customer: e.target.value })}
-            className="p-2 border text-pink-600 rounded-lg flex-1"
-          />
-          <input
-            type="text"
-            placeholder="Room"
-            value={newBooking.room}
-            onChange={(e) => setNewBooking({ ...newBooking, room: e.target.value })}
-            className="p-2 border text-pink-600 rounded-lg flex-1"
-          />
-          <input
-            type="date"
-            value={newBooking.checkIn}
-            onChange={(e) => setNewBooking({ ...newBooking, checkIn: e.target.value })}
-            className="p-2 border text-pink-600 rounded-lg"
-          />
-          <input
-            type="date"
-            value={newBooking.checkOut}
-            onChange={(e) => setNewBooking({ ...newBooking, checkOut: e.target.value })}
-            className="p-2 border text-pink-600 rounded-lg"
-          />
-          <button onClick={handleAddBooking} className="bg-white hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-lg flex items-center">
-            <Plus size={20} />
-          </button>
-        </div>
       </div>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -131,7 +108,7 @@ export default function Bookings() {
             </tr>
           </thead>
           <tbody>
-            {filteredBookings.map((booking) => (
+            {currentBookings.map((booking) => (
               <tr key={booking.id} className="hover:bg-gray-100">
                 <td className="py-3 px-6 border-b">{booking.id}</td>
                 <td className="py-3 px-6 border-b">{booking.customer}</td>
@@ -150,6 +127,11 @@ export default function Bookings() {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-center mt-4 space-x-2">
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Previous</button>
+        <span className="px-4 py-1 bg-gray-300 rounded-lg">{currentPage} / {totalPages}</span>
+        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Next</button>
       </div>
     </div>
   );

@@ -21,6 +21,8 @@ export default function Rooms() {
     { room_name: "", type: "Standard", price: 0 }
   );
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetch("/rooms.json")
@@ -57,6 +59,10 @@ export default function Rooms() {
       room.type?.toLowerCase().includes(search.toLowerCase())) &&
     (filter ? room.type === filter : true)
   );
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentRooms = filteredRooms.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredRooms.length / itemsPerPage);
 
   return (
     <div className="container mx-auto p-6">
@@ -151,6 +157,11 @@ export default function Rooms() {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-center mt-4 space-x-2">
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Previous</button>
+        <span className="px-4 py-1 bg-gray-300 rounded-lg">{currentPage} / {totalPages}</span>
+        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Next</button>
       </div>
     </div>
   );
