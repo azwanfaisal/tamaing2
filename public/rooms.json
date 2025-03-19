@@ -2,8 +2,9 @@
   { "id": 1, "room_name": "Room 1", "type": "Deluxe", "status": "Available", "price": 500000 },
   { "id": 2, "room_name": "Room 2", "type": "Standard", "status": "Booked", "price": 300000 },
   { "id": 3, "room_name": "Room 3", "type": "Suite", "status": "Available", "price": 800000 },
-  { "id": 4, "room_name": "Room 4", "type": "Deluxe", "status": "Booked", "price": 500000 },
-  { "id": 5, "room_name": "Room 5", "type": "Standard", "status": "Available", "price": 300000 }
+  { "id": 4, "room_name": "Room 1", "type": "Deluxe", "status": "Available", "price": 500000 },
+  { "id": 5, "room_name": "Room 2", "type": "Standard", "status": "Booked", "price": 300000 },
+  { "id": 6, "room_name": "Room 3", "type": "Suite", "status": "Available", "price": 800000 }
 ]
 
   

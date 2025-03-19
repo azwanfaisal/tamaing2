@@ -17,11 +17,14 @@ export default function Rooms() {
   const [search, setSearch] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
   const [showFilter, setShowFilter] = useState<boolean>(false);
-  const [newRoom, setNewRoom] = useState<{ room_name: string; type: string; price: number }>(
-    { room_name: "", type: "Standard", price: 0 }
-  );
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false); // state to control the modal visibility
+  const [newRoom, setNewRoom] = useState<{ room_name: string; type: string; price: number }>({
+    room_name: "",
+    type: "Standard",
+    price: 0,
+  });
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -41,8 +44,9 @@ export default function Rooms() {
     }
     const newId = rooms.length ? rooms[rooms.length - 1].id + 1 : 1;
     setRooms([...rooms, { id: newId, ...newRoom }]);
-    setNewRoom({ room_name: "", type: "Standard", price: 0 });
     toast.success("Kamar berhasil ditambahkan! 🎉");
+    setShowModal(false); // close the modal after adding the room
+    setNewRoom({ room_name: "", type: "Standard", price: 0 });
   };
 
   const handleDeleteRoom = (id: number) => {
@@ -54,11 +58,12 @@ export default function Rooms() {
 
   const handleEditRoom = (room: Room) => setEditingRoom(room);
 
-  const filteredRooms = rooms.filter((room) => 
-    (room.room_name?.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredRooms = rooms.filter((room) =>
+    (room.room_name?.toLowerCase().includes(search.toLowerCase()) ||
       room.type?.toLowerCase().includes(search.toLowerCase())) &&
     (filter ? room.type === filter : true)
   );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentRooms = filteredRooms.slice(indexOfFirstItem, indexOfLastItem);
@@ -69,6 +74,7 @@ export default function Rooms() {
       <ToastContainer position="top-right" autoClose={3000} />
       <h1 className="text-3xl font-bold text-center mb-6 text-pink-600">Room List</h1>
 
+      {/* Search and Filter Section */}
       <div className="bg-pink-600 shadow-md rounded-lg p-4 mb-6">
         <div className="mb-4 flex space-x-2 items-center">
           <input
@@ -78,7 +84,10 @@ export default function Rooms() {
             onChange={(e) => setSearch(e.target.value)}
             className="p-2 border text-pink-600 rounded-lg flex-1"
           />
-          <button onClick={() => setShowFilter(!showFilter)} className="bg-white hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-lg flex items-center">
+          <button
+            onClick={() => setShowFilter(!showFilter)}
+            className="bg-white hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-lg flex items-center"
+          >
             <Filter size={20} />
           </button>
         </div>
@@ -97,36 +106,18 @@ export default function Rooms() {
           </div>
         )}
 
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Room Name"
-            value={newRoom.room_name}
-            onChange={(e) => setNewRoom({ ...newRoom, room_name: e.target.value })}
-            className="p-2 border text-pink-600 rounded-lg flex-1"
-          />
-          <select
-            value={newRoom.type}
-            onChange={(e) => setNewRoom({ ...newRoom, type: e.target.value })}
-            className="p-2 border text-pink-600 rounded-lg"
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-white hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-lg flex items-center"
           >
-            <option value="Standard">Standard</option>
-            <option value="Deluxe">Deluxe</option>
-            <option value="Suite">Suite</option>
-          </select>
-          <input
-            type="number"
-            placeholder="Price"
-            value={newRoom.price}
-            onChange={(e) => setNewRoom({ ...newRoom, price: Number(e.target.value) })}
-            className="p-2 border text-pink-600 rounded-lg flex-1"
-          />
-          <button onClick={handleAddRoom} className="bg-white hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-lg flex items-center">
             <Plus size={20} />
+            Add Room
           </button>
         </div>
       </div>
 
+      {/* Rooms Table */}
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -139,17 +130,23 @@ export default function Rooms() {
             </tr>
           </thead>
           <tbody>
-            {filteredRooms.map((room) => (
+            {currentRooms.map((room) => (
               <tr key={room.id} className="hover:bg-gray-100">
                 <td className="py-3 px-6 border-b">{room.id}</td>
                 <td className="py-3 px-6 border-b">{room.room_name}</td>
                 <td className="py-3 px-6 border-b">{room.type}</td>
                 <td className="py-3 px-6 border-b">Rp{room.price}</td>
                 <td className="py-3 px-6 border-b space-x-2 flex">
-                  <button onClick={() => handleEditRoom(room)} className="bg-yellow-500 text-white px-3 py-1 rounded-lg">
+                  <button
+                    onClick={() => handleEditRoom(room)}
+                    className="bg-yellow-500 text-white px-3 py-1 rounded-lg"
+                  >
                     <Edit size={20} />
                   </button>
-                  <button onClick={() => handleDeleteRoom(room.id)} className="bg-red-500 text-white px-3 py-1 rounded-lg">
+                  <button
+                    onClick={() => handleDeleteRoom(room.id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded-lg"
+                  >
                     <Trash2 size={20} />
                   </button>
                 </td>
@@ -158,11 +155,73 @@ export default function Rooms() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Section */}
       <div className="flex justify-center mt-4 space-x-2">
-        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Previous</button>
-        <span className="px-4 py-1 bg-gray-300 rounded-lg">{currentPage} / {totalPages}</span>
-        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Next</button>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="px-4 py-1 bg-gray-300 rounded-lg">
+          {currentPage} / {totalPages}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
+
+      {/* Add Room Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Add New Room</h2>
+            <input
+              type="text"
+              placeholder="Room Name"
+              value={newRoom.room_name}
+              onChange={(e) => setNewRoom({ ...newRoom, room_name: e.target.value })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            />
+            <select
+              value={newRoom.type}
+              onChange={(e) => setNewRoom({ ...newRoom, type: e.target.value })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            >
+              <option value="Standard">Standard</option>
+              <option value="Deluxe">Deluxe</option>
+              <option value="Suite">Suite</option>
+            </select>
+            <input
+              type="number"
+              placeholder="Price"
+              value={newRoom.price}
+              onChange={(e) => setNewRoom({ ...newRoom, price: Number(e.target.value) })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddRoom}
+                className="bg-pink-600 text-white px-4 py-2 rounded-lg"
+              >
+                Add Room
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

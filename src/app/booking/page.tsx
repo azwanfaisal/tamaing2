@@ -22,6 +22,7 @@ export default function Bookings() {
     { customer: "", room: "", checkIn: "", checkOut: "" }
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false); // state to control the modal visibility
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function Bookings() {
     setBookings([...bookings, { id: newId, ...newBooking }]);
     setNewBooking({ customer: "", room: "", checkIn: "", checkOut: "" });
     toast.success("Booking berhasil ditambahkan! 🎉");
+    setShowModal(false); // close the modal after adding the booking
   };
 
   const handleDeleteBooking = (id: number) => {
@@ -67,6 +69,7 @@ export default function Bookings() {
     <div className="container mx-auto p-6">
       <ToastContainer position="top-right" autoClose={3000} />
       <h1 className="text-3xl font-bold text-center mb-6 text-pink-600">Booking List</h1>
+
       <div className="bg-pink-600 shadow-md rounded-lg p-4 mb-6">
         <div className="mb-4 flex space-x-2 items-center">
           <input
@@ -93,6 +96,17 @@ export default function Bookings() {
             ))}
           </select>
         )}
+
+        {/* Add Booking Button */}
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-white hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-lg flex items-center"
+          >
+            <Plus size={20} />
+            Add Booking
+          </button>
+        </div>
       </div>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -128,11 +142,62 @@ export default function Bookings() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
       <div className="flex justify-center mt-4 space-x-2">
         <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Previous</button>
         <span className="px-4 py-1 bg-gray-300 rounded-lg">{currentPage} / {totalPages}</span>
         <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">Next</button>
       </div>
+
+      {/* Add Booking Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Add New Booking</h2>
+            <input
+              type="text"
+              placeholder="Customer Name"
+              value={newBooking.customer}
+              onChange={(e) => setNewBooking({ ...newBooking, customer: e.target.value })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            />
+            <input
+              type="text"
+              placeholder="Room"
+              value={newBooking.room}
+              onChange={(e) => setNewBooking({ ...newBooking, room: e.target.value })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            />
+            <input
+              type="date"
+              value={newBooking.checkIn}
+              onChange={(e) => setNewBooking({ ...newBooking, checkIn: e.target.value })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            />
+            <input
+              type="date"
+              value={newBooking.checkOut}
+              onChange={(e) => setNewBooking({ ...newBooking, checkOut: e.target.value })}
+              className="p-2 border text-pink-600 rounded-lg mb-4 w-full"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddBooking}
+                className="bg-pink-600 text-white px-4 py-2 rounded-lg"
+              >
+                Add Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
