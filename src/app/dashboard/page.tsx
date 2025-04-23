@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, PieChart, Pie, Cell, 
   ResponsiveContainer, Legend, CartesianGrid 
@@ -55,23 +57,51 @@ const notifications: string[] = [
 ];
 
 export default function Dashboard() {
+  const { isLoggedIn, logout } = useAuth();
+  const router = useRouter();
   const [startDate, setStartDate] = useState<Date | null>(new Date());
+
+  // Proteksi halaman
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/auth/login");
+    }
+  }, [isLoggedIn, router]);
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Loading...</h1>
+          <p>Memeriksa status autentikasi</p>
+        </div>
+      </div>
+    );
+  }
+
+ 
+
   return (
     <div className="p-6 bg-gradient-to-r from-blue-50 to-gray-100 min-h-screen">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-pink-600 flex items-center gap-2">📊 Dashboard Overview</h1>
+        <h1 className="text-3xl font-bold text-pink-600 flex items-center gap-2">
+          📊 Dashboard Overview
+        </h1>
         <div className="flex gap-4">
           <DatePicker
             selected={startDate}
             onChange={(date: Date | null) => setStartDate(date)}
             className="p-2 border rounded-lg shadow-md"
           />
+         
           <button className="bg-blue-500 text-white p-2 rounded-lg flex items-center gap-2 hover:bg-blue-600 transition">
             <Filter size={16} /> Filter
           </button>
         </div>
       </div>
       
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div className="bg-blue-500 text-white p-6 rounded-xl shadow-lg">
           <h3 className="text-xl font-bold">Total Pengguna</h3>
@@ -91,6 +121,7 @@ export default function Dashboard() {
         </div>
       </div>
       
+      {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-lg">
           <h3 className="text-lg font-bold mb-2">📅 Booking Terbaru</h3>
@@ -113,7 +144,14 @@ export default function Dashboard() {
               <XAxis dataKey="day" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} />
+              <Line 
+                type="monotone" 
+                dataKey="revenue" 
+                stroke="#10b981" 
+                strokeWidth={3} 
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -122,23 +160,52 @@ export default function Dashboard() {
           <h3 className="text-lg font-bold mb-2">🗣 Umpan Balik</h3>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
-              <Pie data={dataFeedback} cx="50%" cy="50%" outerRadius={70} fill="#8884d8" dataKey="value">
+              <Pie 
+                data={dataFeedback} 
+                cx="50%" 
+                cy="50%" 
+                outerRadius={70} 
+                innerRadius={40}
+                paddingAngle={5}
+                dataKey="value"
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              >
                 {dataFeedback.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value) => [`${value}%`, "Persentase"]} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
+      {/* Notifications Section */}
       <div className="bg-white p-6 rounded-xl shadow-lg mt-6">
-        <h3 className="text-lg font-bold mb-2 flex items-center gap-2">🔔 Notifikasi Terbaru</h3>
-        <ul>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <Bell className="text-pink-600" /> Notifikasi Terbaru
+          </h3>
+          <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full">
+            {notifications.length} Baru
+          </span>
+        </div>
+        <ul className="divide-y">
           {notifications.map((note, index) => (
-            <li key={index} className="p-2 border-b last:border-none">{note}</li>
+            <li key={index} className="py-3 px-2 hover:bg-gray-50 transition">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 h-5 w-5 text-pink-500 mt-0.5">
+                  {index === 0 ? (
+                    <span className="inline-flex items-center justify-center h-3 w-3 rounded-full bg-pink-500 animate-pulse"></span>
+                  ) : null}
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-900">{note}</p>
+                  <p className="text-xs text-gray-500">10 menit yang lalu</p>
+                </div>
+              </div>
+            </li>
           ))}
         </ul>
       </div>
